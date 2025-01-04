@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: evershop-nginx
+spec:
+  replicas: {{ .Values.replicaCount.nginx }}
+  selector:
+    matchLabels:
+      app: evershop-nginx
+  template:
+    metadata:
+      labels:
+        app: evershop-nginx
+    spec:
+      containers:
+        - name: evershop-nginx
+          image: {{ .Values.nginx.image }}
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /etc/nginx/conf.d  
+              name: nginx-config  
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: evershop-nginx-config
+---
+
+# For local environment, use NodePort or another suitable method.
+# In the cloud, a LoadBalancer should be used to ensure availability.
+apiVersion: v1
+kind: Service
+metadata:
+  name: evershop-nginx
+spec:
+  selector:
+    app: evershop-nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30080
+  type: NodePort

@@ -1,0 +1,5 @@
+apiVersion: v2
+name: my-evershop
+description: A Helm chart for deploying Evershop with Admin and Frontend services
+version: 0.1.0
+appVersion: "latest"

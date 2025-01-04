@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: evershop-frontend
+spec:
+  replicas: {{ .Values.replicaCount.frontend }}
+  selector:
+    matchLabels:
+      app: evershop-frontend
+  template:
+    metadata:
+      labels:
+        app: evershop-frontend
+    spec:
+      containers:
+        - name: evershop-frontend
+          image: {{ .Values.image.app }}
+          ports:
+            - containerPort: {{ .Values.frontend.containerPort }}
+          env:
+            - name: DB_HOST
+              value: {{ .Values.db.host }}
+            - name: DB_PORT
+              value: {{ .Values.db.port | quote }}
+            - name: DB_USER
+              value: {{ .Values.db.user }}
+            - name: DB_PASSWORD
+              value: {{ .Values.db.password }}
+            - name: DB_NAME
+              value: {{ .Values.db.name }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.frontend.containerPort }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.frontend.containerPort }}
+            initialDelaySeconds: 15
+            periodSeconds: 20
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: evershop-admin
+spec:
+  replicas: {{ .Values.replicaCount.admin }}
+  selector:
+    matchLabels:
+      app: evershop-admin
+  template:
+    metadata:
+      labels:
+        app: evershop-admin
+    spec:
+      containers:
+        - name: evershop-admin
+          image: {{ .Values.image.admin }}
+          ports:
+            - containerPort: {{ .Values.admin.containerPort }}
+          env:
+            - name: DB_HOST
+              value: {{ .Values.db.host }}
+            - name: DB_PORT
+              value: {{ .Values.db.port | quote }}
+            - name: DB_USER
+              value: {{ .Values.db.user }}
+            - name: DB_PASSWORD
+              value: {{ .Values.db.password }}
+            - name: DB_NAME
+              value: {{ .Values.db.name }}
+          readinessProbe:
+            httpGet:
+              path: /admin
+              port: {{ .Values.admin.containerPort }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /admin
+              port: {{ .Values.admin.containerPort }}
+            initialDelaySeconds: 15
+            periodSeconds: 20
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 1

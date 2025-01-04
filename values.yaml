@@ -1,0 +1,38 @@
+nginx:
+  image: nginx:latest
+  ingressPath: /
+  
+replicaCount:
+  frontend: 2
+  admin: 1
+  database: 1
+  nginx: 1
+
+image:
+  app: evershop/evershop:latest
+  pullPolicy: IfNotPresent
+  admin: evershop/evershop:latest
+
+#Just for simplicity, instead use secrets
+db:
+  host: database
+  port: 5432
+  user: postgres
+  password: postgres
+  name: postgres
+
+frontend:
+  serviceName: frontend-service
+  containerPort: 3000
+  ingressPath: / 
+
+admin:
+  serviceName: admin-service
+  containerPort: 3000
+  ingressPath: /admin
+
+resources: {}
+
+persistence:
+  postgresData:
+    size: 8Gi
