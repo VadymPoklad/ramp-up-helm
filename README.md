@@ -6,17 +6,20 @@ The task involves deploying a Kubernetes cluster with NGINX as a forward proxy a
 ## Setup:
 
 - **Create DB secret**
+  
   kubectl create secret generic db-credentials \
   --from-literal=user=<your-db-user> \
   --from-literal=password=<your-db-password> \
   --from-literal=name=<your-db-name>
 
 - **Install the Datadog Operator**
+  
   helm repo add datadog https://helm.datadoghq.com
   helm install datadog-operator datadog/datadog-operator
   kubectl create secret generic datadog-secret --from-literal api-key=***********
 
 - **Install HELM**
+  
   helm install evershop ./
   
 ## Objective of the Task:
