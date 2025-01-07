@@ -1,32 +1,24 @@
 nginx:
   image: nginx:latest
   ingressPath: /
+  replicaCount: 1
   
-replicaCount:
-  frontend: 2
-  admin: 1
-  database: 1
-  nginx: 1
-
-image:
-  app: evershop/evershop:latest
-  pullPolicy: IfNotPresent
-  admin: evershop/evershop:latest
-
-#Just for simplicity, instead use secrets
-db:
+database:
+  image: postgres:16
+  replicaCount: 1
   host: database
   port: 5432
-  user: postgres
-  password: postgres
-  name: postgres
 
 frontend:
+  image: evershop/evershop:1.2.1
+  replicaCount: 2
   serviceName: frontend-service
   containerPort: 3000
   ingressPath: / 
 
 admin:
+  image: evershop/evershop:1.2.1
+  replicaCount: 1
   serviceName: admin-service
   containerPort: 3000
   ingressPath: /admin

@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: evershop-admin
+spec:
+  replicas: {{ .Values.admin.replicaCount }}
+  selector:
+    matchLabels:
+      app: evershop-admin
+  template:
+    metadata:
+      labels:
+        app: evershop-admin
+    spec:
+      imagePullSecrets:
+        - name: my-registry-secret
+      containers:
+        - name: evershop-admin
+          image: {{ .Values.admin.image }}
+          ports:
+            - containerPort: {{ .Values.admin.containerPort }}
+          env:
+            - name: DB_HOST
+              value: {{ .Values.database.host }}
+            - name: DB_PORT
+              value: {{ .Values.database.port | quote }}
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: password
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: name
+          readinessProbe:
+            httpGet:
+              path: /admin
+              port: {{ .Values.admin.containerPort }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /admin
+              port: {{ .Values.admin.containerPort }}
+            initialDelaySeconds: 15
+            periodSeconds: 20
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.admin.serviceName }}
+spec:
+  selector:
+    app: evershop-admin
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: {{ .Values.admin.containerPort }}

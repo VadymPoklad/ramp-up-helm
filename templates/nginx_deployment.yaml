@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: evershop-nginx
 spec:
-  replicas: {{ .Values.replicaCount.nginx }}
+  replicas: {{ .Values.nginx.replicaCount }}
   selector:
     matchLabels:
       app: evershop-nginx
@@ -24,10 +24,9 @@ spec:
         - name: nginx-config
           configMap:
             name: evershop-nginx-config
----
 
-# For local environment, use NodePort or another suitable method.
-# In the cloud, a LoadBalancer should be used to ensure availability.
+---
+#Only for local env, in cloud use loadbalancer instead
 apiVersion: v1
 kind: Service
 metadata:

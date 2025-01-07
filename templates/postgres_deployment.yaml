@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: postgres-db
 spec:
-  replicas: {{ .Values.replicaCount.database }}
+  replicas: {{ .Values.database.replicaCount }}
   selector:
     matchLabels:
       app: postgres-db
@@ -12,18 +12,29 @@ spec:
       labels:
         app: postgres-db
     spec:
+      imagePullSecrets:
+        - name: my-registry-secret
       containers:
         - name: postgres
-          image: postgres:16
+          image: {{ .Values.database.image }}
           env:
             - name: POSTGRES_USER
-              value: {{ .Values.db.user }}
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: user
             - name: POSTGRES_PASSWORD
-              value: {{ .Values.db.password }}
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: password
             - name: POSTGRES_DB
-              value: {{ .Values.db.name }}
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: name
           ports:
-            - containerPort: 5432
+            - containerPort: {{ .Values.database.port }}
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: postgres-data
@@ -35,11 +46,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: database
+  name: {{ .Values.database.host }}
 spec:
   selector:
     app: postgres-db
   ports:
     - protocol: TCP
-      port: 5432
-      targetPort: 5432
+      port: {{ .Values.database.port }}
+      targetPort: {{ .Values.database.port }}

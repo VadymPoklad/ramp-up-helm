@@ -1,0 +1,25 @@
+apiVersion: "datadoghq.com/v2alpha1"
+kind: "DatadogAgent"
+metadata:
+  name: "datadog"
+spec:
+  global:
+    clusterName: "minikube"
+    registry: "public.ecr.aws/datadog"
+    site: "us5.datadoghq.com"
+    credentials:
+      apiSecret:
+        secretName: "datadog-secret"
+        keyName: "api-key"
+    kubelet:
+      tlsVerify: false
+  features:
+    logCollection:
+      enabled: true
+      containerCollectAll: true
+    usm:
+      enabled: true
+    npm:
+      enabled: true
+    orchestratorExplorer:
+      enabled: true
