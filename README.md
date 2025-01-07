@@ -15,7 +15,9 @@ The task involves deploying a Kubernetes cluster with NGINX as a forward proxy a
 - **Install the Datadog Operator**
   
   helm repo add datadog https://helm.datadoghq.com
+  
   helm install datadog-operator datadog/datadog-operator
+  
   kubectl create secret generic datadog-secret --from-literal api-key=***********
 
 - **Install HELM**
